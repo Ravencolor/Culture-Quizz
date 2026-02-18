@@ -1,12 +1,21 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { ArrowLeft, Scroll, Clapperboard, Trophy, Globe, Atom, Music } from "lucide-react"
-import { getCategories, type Category } from "@/lib/quiz-data"
+
+// Types pour correspondre à votre API
+interface Category {
+  id: string
+  name: string
+  icon: string
+  description: string
+  color: string
+}
 
 interface CategorySelectionProps {
   onSelect: (categoryId: string) => void
   onBack: () => void
 }
 
+// Correspondance des icônes Lucide
 const iconMap: Record<string, React.ReactNode> = {
   scroll: <Scroll className="w-8 h-8" />,
   clapperboard: <Clapperboard className="w-8 h-8" />,
@@ -17,7 +26,27 @@ const iconMap: Record<string, React.ReactNode> = {
 }
 
 export function CategorySelection({ onSelect, onBack }: CategorySelectionProps) {
-  const categories: Category[] = getCategories()
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Appel à votre serveur Node.js (assurez-vous qu'il tourne sur le port 3001)
+    fetch("http://localhost:3001/api/categories")
+      .then((res) => {
+        if (!res.ok) throw new Error("Erreur réseau lors de la récupération des catégories")
+        return res.json()
+      })
+      .then((data) => {
+        setCategories(data)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error(err)
+        setError("Impossible de charger les catégories.")
+        setLoading(false)
+      })
+  }, [])
 
   return (
     <main className="min-h-dvh bg-background p-4 pb-8">
@@ -31,12 +60,24 @@ export function CategorySelection({ onSelect, onBack }: CategorySelectionProps) 
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-            Choisir une categorie
+            Choisir une catégorie
           </h1>
         </header>
 
+        {loading && (
+          <div className="flex justify-center py-10 text-muted-foreground">
+            Chargement des thèmes...
+          </div>
+        )}
+
+        {error && (
+          <div className="p-4 bg-destructive/10 text-destructive rounded-xl text-center mb-4">
+            {error}
+          </div>
+        )}
+
         <div className="grid gap-4">
-          {categories.map((category) => (
+          {!loading && categories.map((category) => (
             <button
               key={category.id}
               onClick={() => onSelect(category.id)}

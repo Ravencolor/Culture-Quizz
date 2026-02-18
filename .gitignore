@@ -1,27 +1,39 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# --- Culture Quiz Project ---
 
-# dependencies
-/node_modules
+# Dépendances (Ignore les node_modules à la racine et dans les sous-dossiers)
+node_modules/
+**/node_modules/
 
-# next.js
-/.next/
+# Production (Vite utilise 'dist', et votre sujet mentionne 'build')
+dist/
+build/
 /out/
 
-# production
-/build
-
-# debug
+# Debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
-.env*
+# Fichiers d'environnement (Important pour la sécurité de l'API)
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# vercel
-.vercel
-
-# typescript
+# TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE / Système
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.bak
+
+# --- Spécifique au projet ---
+# Ne pas ignorer le start.bat car il est nécessaire pour lancer le projet
+!start.bat
