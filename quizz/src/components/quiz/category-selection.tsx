@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { ArrowLeft, Scroll, Clapperboard, Trophy, Globe, Atom, Music } from "lucide-react"
+import { fetchCategories } from "@/lib/quiz-data";
 
-// Types pour correspondre à votre API
 interface Category {
   id: string
   name: string
@@ -15,7 +15,7 @@ interface CategorySelectionProps {
   onBack: () => void
 }
 
-// Correspondance des icônes Lucide
+
 const iconMap: Record<string, React.ReactNode> = {
   scroll: <Scroll className="w-8 h-8" />,
   clapperboard: <Clapperboard className="w-8 h-8" />,

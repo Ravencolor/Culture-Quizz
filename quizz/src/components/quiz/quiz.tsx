@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react"
 import { ArrowLeft, Clock } from "lucide-react"
-
+import { fetchQuestions } from "@/lib/quiz-data";
 
 interface Question {
   id: number
@@ -25,7 +25,7 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled
 }
 
-// Sélectionne 4 réponses (dont la bonne) parmi les 10 fournies par l'API
+// Sélectionne 4 réponses (dont la bonne) 
 function getRandomAnswers(allAnswers: string[], correctAnswer: string): string[] {
   const wrongAnswers = allAnswers.filter((a) => a !== correctAnswer)
   const selectedWrong = shuffleArray(wrongAnswers).slice(0, 3)
@@ -45,19 +45,18 @@ export function Quiz({ categoryId, onComplete, onBack }: QuizProps) {
   const timerRef = useRef<number | null>(null)
   const transitionTimeoutRef = useRef<number | null>(null)
 
-  
+
   useEffect(() => {
-    fetch(`http://localhost:3001/api/questions/${categoryId}`)
-      .then((res) => res.json())
+    fetchQuestions(categoryId)
       .then((data) => {
-        setQuestions(shuffleArray(data))
-        setLoading(false)
+        setQuestions(shuffleArray(data));
+        setLoading(false);
       })
       .catch((err) => {
-        console.error("Erreur API:", err)
-        setLoading(false)
-      })
-  }, [categoryId])
+        console.error(err);
+        setLoading(false);
+      });
+  }, [categoryId]);
 
   const currentQuestion = questions[currentIndex]
 
@@ -102,25 +101,40 @@ export function Quiz({ categoryId, onComplete, onBack }: QuizProps) {
   }, [currentQuestion])
 
   // 3. Gestion du Timer (30s par question)
+  // Timer effect corrigé
   useEffect(() => {
-    if (isAnswered || !currentQuestion || loading) return
+    // 1. On ne lance le timer que si on n'a pas encore répondu
+    if (isAnswered || !currentQuestion || loading) return;
+
+    // 2. IMPORTANT : On nettoie TOUJOURS le timer précédent avant d'en créer un nouveau
+    if (timerRef.current) {
+      window.clearInterval(timerRef.current);
+    }
 
     timerRef.current = window.setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          if (timerRef.current) clearInterval(timerRef.current)
-          setIsAnswered(true)
-          transitionTimeoutRef.current = window.setTimeout(moveToNextQuestion, 1500)
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
+          if (timerRef.current) window.clearInterval(timerRef.current);
 
+          // On marque comme répondu pour bloquer les clics
+          setIsAnswered(true);
+
+          // On passe à la suite après le délai visuel
+          transitionTimeoutRef.current = window.setTimeout(() => {
+            moveToNextQuestion();
+          }, 1500);
+
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    // 3. Nettoyage lors du démontage du composant
     return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
-  }, [isAnswered, currentQuestion, loading, moveToNextQuestion])
+      if (timerRef.current) window.clearInterval(timerRef.current);
+    };
+  }, [isAnswered, currentQuestion, loading, moveToNextQuestion]); // Dépendances correctes
 
   if (loading) return <div className="flex justify-center items-center h-dvh">Chargement du quiz...</div>
   if (!currentQuestion) return null

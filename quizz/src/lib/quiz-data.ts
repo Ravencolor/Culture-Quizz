@@ -1,29 +1,13 @@
-export interface Category {
-  id: string
-  name: string
-  icon: string
-  description: string
-  color: string
-}
-
-export interface Question {
-  id: number
-  question: string
-  answers: string[]
-  correctAnswer: string
-}
-
-
 const API_URL = "http://localhost:3001/api";
 
-export async function fetchCategories(): Promise<Category[]> {
+export async function fetchCategories() {
   const response = await fetch(`${API_URL}/categories`);
-  if (!response.ok) throw new Error("Erreur lors de la récupération des catégories");
+  if (!response.ok) throw new Error("Erreur catégories");
   return response.json();
 }
 
-export async function fetchQuestions(categoryId: string): Promise<Question[]> {
+export async function fetchQuestions(categoryId: string) {
   const response = await fetch(`${API_URL}/questions/${categoryId}`);
-  if (!response.ok) throw new Error("Erreur lors de la récupération des questions");
+  if (!response.ok) throw new Error("Erreur questions");
   return response.json();
 }
