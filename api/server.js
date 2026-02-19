@@ -91,7 +91,6 @@ const questionsData = {
     ],
 };
 
-// --- ENDPOINTS API ---
 
 
 app.get('/api/categories', (req, res) => {
