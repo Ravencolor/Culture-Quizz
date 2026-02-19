@@ -100,13 +100,9 @@ export function Quiz({ categoryId, onComplete, onBack }: QuizProps) {
     }
   }, [currentQuestion])
 
-  // 3. Gestion du Timer (30s par question)
-  // Timer effect corrigé
+  // Gestion du Timer (30s par question)
   useEffect(() => {
-    // 1. On ne lance le timer que si on n'a pas encore répondu
     if (isAnswered || !currentQuestion || loading) return;
-
-    // 2. IMPORTANT : On nettoie TOUJOURS le timer précédent avant d'en créer un nouveau
     if (timerRef.current) {
       window.clearInterval(timerRef.current);
     }
@@ -115,11 +111,8 @@ export function Quiz({ categoryId, onComplete, onBack }: QuizProps) {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           if (timerRef.current) window.clearInterval(timerRef.current);
-
-          // On marque comme répondu pour bloquer les clics
           setIsAnswered(true);
-
-          // On passe à la suite après le délai visuel
+          
           transitionTimeoutRef.current = window.setTimeout(() => {
             moveToNextQuestion();
           }, 1500);
@@ -130,11 +123,11 @@ export function Quiz({ categoryId, onComplete, onBack }: QuizProps) {
       });
     }, 1000);
 
-    // 3. Nettoyage lors du démontage du composant
+   
     return () => {
       if (timerRef.current) window.clearInterval(timerRef.current);
     };
-  }, [isAnswered, currentQuestion, loading, moveToNextQuestion]); // Dépendances correctes
+  }, [isAnswered, currentQuestion, loading, moveToNextQuestion]);
 
   if (loading) return <div className="flex justify-center items-center h-dvh">Chargement du quiz...</div>
   if (!currentQuestion) return null
