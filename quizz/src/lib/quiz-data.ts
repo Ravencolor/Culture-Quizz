@@ -13,7 +13,7 @@ export interface Question {
   correctAnswer: string
 }
 
-// src/lib/quiz-data.ts modifié
+
 const API_URL = "http://localhost:3001/api";
 
 export async function fetchCategories(): Promise<Category[]> {
