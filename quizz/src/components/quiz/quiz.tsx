@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from "react"
 import { ArrowLeft, Clock } from "lucide-react"
 
-// Types pour les questions provenant de l'API
+
 interface Question {
   id: number
   question: string
@@ -15,7 +15,7 @@ interface QuizProps {
   onBack: () => void
 }
 
-// Fonction utilitaire pour mélanger les réponses
+
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array]
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -45,12 +45,12 @@ export function Quiz({ categoryId, onComplete, onBack }: QuizProps) {
   const timerRef = useRef<number | null>(null)
   const transitionTimeoutRef = useRef<number | null>(null)
 
-  // 1. Chargement des questions depuis l'API
+  
   useEffect(() => {
     fetch(`http://localhost:3001/api/questions/${categoryId}`)
       .then((res) => res.json())
       .then((data) => {
-        setQuestions(shuffleArray(data)) // Mélange les questions
+        setQuestions(shuffleArray(data))
         setLoading(false)
       })
       .catch((err) => {
@@ -92,7 +92,7 @@ export function Quiz({ categoryId, onComplete, onBack }: QuizProps) {
     [isAnswered, currentQuestion, moveToNextQuestion]
   )
 
-  // 2. Mise à jour des réponses affichées quand la question change
+  // Mise à jour des réponses affichées 
   useEffect(() => {
     if (currentQuestion) {
       setDisplayedAnswers(
